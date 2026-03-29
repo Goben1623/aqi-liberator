@@ -18,7 +18,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ATTSSE_URL = "https://att.waqi.info/api/attsse"
-SEARCH_URL = "https://api.waqi.info/v2/search"
+SEARCH_URL = "https://search.waqi.info/nsearch/station"
+NEAREST_URL = "https://mapq.waqi.info/mapq/nearest"
 USAGE_PATH = Path.home() / ".aqi-liberator" / "usage.jsonl"
 
 
@@ -187,15 +188,25 @@ def fetch_sse(station_id: int, timeout: int = 30) -> str:
 
 def search_stations(keyword: str, timeout: int = 10) -> list[dict]:
     import urllib.request, urllib.parse
-    url = f"{SEARCH_URL}/?keyword={urllib.parse.quote(keyword)}&token=demo"
+    url = f"{SEARCH_URL}/{urllib.parse.quote(keyword)}"
     req = urllib.request.Request(url, headers={"User-Agent": "aqi-liberator/0.1"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         data = json.loads(resp.read())
-    if data.get("status") != "ok":
-        return []
     return [
-        {"uid": s["uid"], "name": s.get("station", {}).get("name", ""), "aqi": s.get("aqi", "")}
-        for s in data.get("data", [])
+        {"uid": s["x"], "name": s["n"][0] if s.get("n") else "", "country": s.get("c", "")}
+        for s in data.get("results", [])
+    ]
+
+
+def nearest_stations(lat: float, lon: float, n: int = 10, timeout: int = 10) -> list[dict]:
+    import urllib.request
+    url = f"{NEAREST_URL}/?n={n}&geo=1/{lat}/{lon}"
+    req = urllib.request.Request(url, headers={"User-Agent": "aqi-liberator/0.1"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        data = json.loads(resp.read())
+    return [
+        {"uid": s["x"], "name": s.get("nlo", ""), "aqi": s.get("v", "")}
+        for s in data.get("d", [])
     ]
 
 
@@ -391,29 +402,41 @@ def cmd_compare(args):
 
 def cmd_stations(args):
     t0 = time.monotonic()
-    if not args.search:
+    if not args.search and not args.near:
         stderr("usage: aqi-liberator stations --search 'city name'")
+        stderr("       aqi-liberator stations --near LAT,LON")
         sys.exit(1)
 
     try:
-        results = search_stations(args.search, timeout=args.timeout)
+        if args.near:
+            parts = args.near.split(",")
+            if len(parts) != 2:
+                stderr("--near expects LAT,LON (e.g., 12.57,99.95)")
+                sys.exit(1)
+            lat, lon = float(parts[0]), float(parts[1])
+            results = nearest_stations(lat, lon, timeout=args.timeout)
+        else:
+            results = search_stations(args.search, timeout=args.timeout)
     except Exception as e:
         stderr(f"search error: {e}")
         log_usage("stations", False, _ms(t0), error=str(e)[:100])
         sys.exit(2)
 
     if not results:
-        stderr(f"no stations found for '{args.search}'")
-        stderr(f"  try a broader term (country name, region)")
-        log_usage("stations", False, _ms(t0), search=args.search, results=0)
+        query = args.near or args.search
+        stderr(f"no stations found for '{query}'")
+        stderr(f"  try: --near LAT,LON for coordinate search, or a broader keyword")
+        log_usage("stations", False, _ms(t0), search=query, results=0)
         sys.exit(1)
 
     if args.json:
         write_json(results)
     else:
-        write_csv([[r["uid"], r["name"], r["aqi"]] for r in results], ["uid", "name", "aqi"])
+        headers = ["uid", "name", "aqi"] if args.near else ["uid", "name", "country"]
+        rows = [[r.get("uid"), r.get("name"), r.get("aqi", r.get("country", ""))] for r in results]
+        write_csv(rows, headers)
 
-    log_usage("stations", True, _ms(t0), search=args.search, results=len(results))
+    log_usage("stations", True, _ms(t0), results=len(results))
 
 
 def cmd_usage(args):
@@ -524,7 +547,8 @@ def main():
 
     # stations
     s = sub.add_parser("stations", help="search for station IDs")
-    s.add_argument("--search", required=True, help="search keyword")
+    s.add_argument("--search", help="search by name")
+    s.add_argument("--near", help="search by coordinates: LAT,LON")
     s.add_argument("--json", action="store_true", help="JSON output")
     s.add_argument("--timeout", type=int, default=10, help="HTTP timeout seconds")
 
